@@ -1,4 +1,5 @@
 import os
+from config import MAX_CHARS
 
 # Function to get read the data of a specific file
 def get_file_content(working_directory, file_path):
@@ -9,44 +10,33 @@ def get_file_content(working_directory, file_path):
         
         # Get the absolute path, join it with the directory, and normalize them for safety
         working_dir_abs = os.path.abspath(working_directory)
-        target_dir = os.path.normpath(os.path.join(working_dir_abs, directory))
+        target_file = os.path.normpath(os.path.join(working_dir_abs, file_path))
         
         # Check if our paths are correct and, by extension, in the permitted directory
-        valid_target_dir = os.path.commonpath([working_dir_abs, target_dir]) == working_dir_abs
+        valid_target_file = os.path.commonpath([working_dir_abs, target_file]) == working_dir_abs
+        #valid_target_file = False
         
-        # Return an error if we're not in the permitted directory or if we're trying to work with a path that doesn't end in a directory
-        if valid_target_dir == False:
-            return print(f'Error: Cannot list "{directory}" as it is outside the permitted working directory')
+        # Return an error if we're not in the permitted directory or if we're trying to work with a file that doesn't exist or is not a regular file
+        if valid_target_file == False:
+            return f'Error: Cannot read "{file_path}" as it is outside the permitted working directory'
             
-        elif os.path.isdir(target_dir) == False:
-            return print(f'Error: "{directory}" is not a directory')
-       
-        directoryContents = ""
-            
-        # Get the data on directory contents
-        ## Loop over our contents
-        for items in os.listdir(target_dir):
-            
-            ## Build the file path for us to access in the lower functions
-            target_dir_file = os.path.join(target_dir, items)
-            
-            ## Build our string of useful stats
-            directoryContents += "- " + items + ": " + ", ".join([
-                f'file_size={str(os.path.getsize(target_dir_file))} bytes', 
-                f'is_dir={str(os.path.isdir(target_dir_file))}'
-                ]) + "\n"
+        elif os.path.isfile(target_file) == False:
+            return f'Error: File not found or is not a regular file: "{file_path}"'
         
-        # Check that the correct things are printed out
-        ## Not exactly the way I'd do it but this ensures that the assignment sees what it's looking for
-        nameSpaceHolder = ""
         
-        if directory == ".":
-            nameSpaceHolder = "current"
-        else:
-            nameSpaceHolder = directory
+        # Open a file, read it out of the MAX_CHARS value (10000 at default), and check if we've truncated things
+        fileContents = ""
+        trunTest = False
+        
+        with open(target_file, "r") as file:
+            fileContents = file.read(MAX_CHARS)
             
-        # Print the results
-        print(f'Result for {nameSpaceHolder} directory: \n{directoryContents}')
+            if file.read(1):
+                fileContents += f'[...File "{file_path}" truncated at {MAX_CHARS} characters]'
+                trunTest = True
+        
+        
+        return fileContents
         
     # Something went wrong that we didn't account for
     except Exception as e:

@@ -15,10 +15,10 @@ def get_files_info(working_directory, directory="."):
         
         # Return an error if we're not in the permitted directory or if we're trying to work with a path that doesn't end in a directory
         if valid_target_dir == False:
-            return print(f'Error: Cannot list "{directory}" as it is outside the permitted working directory')
+            return f'Error: Cannot list "{directory}" as it is outside the permitted working directory'
             
         elif os.path.isdir(target_dir) == False:
-            return print(f'Error: "{directory}" is not a directory')
+            return f'Error: "{directory}" is not a directory'
        
         directoryContents = ""
             
@@ -44,8 +44,10 @@ def get_files_info(working_directory, directory="."):
         else:
             nameSpaceHolder = directory
             
-        # Print the results
-        print(f'Result for {nameSpaceHolder} directory: \n{directoryContents}')
+        # Return the results
+        
+        return f'Result for {nameSpaceHolder} directory: \n{directoryContents}'
+        
         
     # Something went wrong that we didn't account for
     except Exception as e:
