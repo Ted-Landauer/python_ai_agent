@@ -11,6 +11,11 @@ def get_file_content(working_directory, file_path):
         # Get the absolute path, join it with the directory, and normalize them for safety
         working_dir_abs = os.path.abspath(working_directory)
         target_file = os.path.normpath(os.path.join(working_dir_abs, file_path))
+        print("printing the target file")
+        print(target_file)
+        
+        print("printing the working_dir")
+        print(working_dir_abs)
         
         # Check if our paths are correct and, by extension, in the permitted directory
         valid_target_file = os.path.commonpath([working_dir_abs, target_file]) == working_dir_abs
