@@ -1,4 +1,6 @@
 import os
+from google import genai
+from google.genai import types
 
 def write_file(working_directory, file_path, content):
     
@@ -34,3 +36,33 @@ def write_file(working_directory, file_path, content):
     # Something went wrong that we didn't account for
     except Exception as e:
         return f'Error: {e}'
+        
+        
+
+# Create schema for the function so that the agent knows what to do
+    ## name of the function
+    ## description of the function
+    ## start of parameters
+        ### the type of the input parameters
+        ### the properties of the parameters
+            #### parameter name
+                ##### type of the parameter specifically
+                ##### description        
+schema_write_files = types.FunctionDeclaration(
+    name="write_file",
+    description="create a file and write to it if it doesn't exist or write to it if it does. Will overwrite contents",
+    parameters=types.Schema(
+        type=types.Type.OBJECT,
+        properties={
+            "file_path": types.Schema(
+                type=types.Type.STRING,
+                description="the specific file name to open and write to"
+            ),
+            "content": types.Schema(
+                type=types.Type.STRING,
+                description="the content to write to the specific file"
+            ),
+        },
+        required=["file_path", "content"],
+    ),
+)

@@ -1,5 +1,7 @@
 import os
 import subprocess
+from google import genai
+from google.genai import types
 
 def run_python_file(working_directory, file_path, args=None):
     
@@ -71,3 +73,37 @@ def run_python_file(working_directory, file_path, args=None):
     # Something went wrong that we didn't account for
     except Exception as e:
         return f'Error: executing Python file: {e}'
+        
+        
+        
+        
+# Create schema for the function so that the agent knows what to do
+    ## name of the function
+    ## description of the function
+    ## start of parameters
+        ### the type of the input parameters
+        ### the properties of the parameters
+            #### parameter name
+                ##### type of the parameter specifically
+                ##### description
+schema_run_python_file = types.FunctionDeclaration(
+    name="run_python_file",
+    description="runs a python file",
+    parameters=types.Schema(
+        type=types.Type.OBJECT,
+        properties={
+            "file_path": types.Schema(
+                type=types.Type.STRING,
+                description="the specific python file to run",
+            ),
+            "args": types.Schema(
+                type=types.Type.ARRAY,
+                items=types.Schema(
+                    type=types.Type.STRING,
+                ),
+                description="optional list of arguments to pass for the python command to run",
+            ),
+        },
+        required=["file_path"],
+    ),
+)

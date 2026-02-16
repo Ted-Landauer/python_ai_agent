@@ -1,5 +1,7 @@
 import os
 from config import MAX_CHARS
+from google import genai
+from google.genai import types
 
 # Function to get read the data of a specific file
 def get_file_content(working_directory, file_path):
@@ -46,6 +48,33 @@ def get_file_content(working_directory, file_path):
     # Something went wrong that we didn't account for
     except Exception as e:
         return f'Error: {e}'
+        
+        
+        
+
+# Create schema for the function so that the agent knows what to do
+    ## name of the function
+    ## description of the function
+    ## start of parameters
+        ### the type of the input parameters
+        ### the properties of the parameters
+            #### parameter name
+                ##### type of the parameter specifically
+                ##### description        
+schema_get_file_content = types.FunctionDeclaration(
+    name="get_file_content",
+    description="Gets and returns the content of files in a specified directory relative to the working directory, providing the file contents and whether or not the file was truncated for being to large",
+    parameters=types.Schema(
+        type=types.Type.OBJECT,
+        properties={
+            "file_path" : types.Schema(
+                type=types.Type.STRING,
+                description="the specific file name to open and read",
+            ),
+        },
+        required=["file_path"],
+    ),
+)
         
         
     

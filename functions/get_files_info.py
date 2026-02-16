@@ -1,4 +1,6 @@
 import os
+from google import genai
+from google.genai import types
 
 # Function to get data about the files and directories when provided with a specific path
 def get_files_info(working_directory, directory="."):
@@ -52,6 +54,32 @@ def get_files_info(working_directory, directory="."):
     # Something went wrong that we didn't account for
     except Exception as e:
         return f'Error: {e}'
+
+
+
+
+# Create schema for the function so that the agent knows what to do
+    ## name of the function
+    ## description of the function
+    ## start of parameters
+        ### the type of the input parameters
+        ### the properties of the parameters
+            #### parameter name
+                ##### type of the parameter specifically
+                ##### description        
+schema_get_files_info = types.FunctionDeclaration(
+    name="get_files_info",
+    description="Lists files in a specified directory relative to the working directory, providing file size and directory status",
+    parameters=types.Schema(
+        type=types.Type.OBJECT,
+        properties={
+            "directory": types.Schema(
+                type=types.Type.STRING,
+                description="Directory path to list files from, relative to the working directory (default is the working directory itself)",
+            ),
+        },
+    ),
+)
         
         
     
