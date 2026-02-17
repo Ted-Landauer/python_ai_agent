@@ -5,6 +5,7 @@ from google import genai
 from google.genai import types
 from prompts import system_prompt
 from call_function import available_functions, call_function
+from config import MAX_ITERS
 
 
 
@@ -40,7 +41,16 @@ def main():
         print(f"User prompt: {args.user_prompt}\n")
 
     # Call the generate content function
-    generate_content(client, messages, args.verbose)
+    
+    for _ in range(MAX_ITERS):
+        result = generate_content(client, messages, args.verbose)
+        
+        if result:
+            print(f'Success: {result}')
+            return
+            
+    print("Oh no, I ran out of turns!")    
+    sys.exit(1)
     
 
 
@@ -56,6 +66,19 @@ def generate_content(client, messages, verbose):
             system_instruction=system_prompt
             )
         )
+        
+    # Check that we have responses that need to be added to messages
+    if response.candidates:
+        
+        # Loop through all returned candidates for their responses
+        for candidate in response.candidates:
+            
+            # Add returned responses to our agent to give it a "memory"
+            if candidate.content:
+                messages.append(candidate.content)
+        
+            
+        
         
     # Check that nothing failed in getting the response
     if response.usage_metadata is None:
@@ -104,6 +127,8 @@ def generate_content(client, messages, verbose):
         
         # Add all the responses to a list: Returning this value comes later
         function_responses.append(function_call_result.parts[0])
+        
+    messages.append(types.Content(role="user", parts=function_responses))
         
         
         #print(f"Calling function: {function_call.name}({function_call.args})")
