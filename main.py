@@ -6,6 +6,8 @@ from google.genai import types
 from prompts import system_prompt
 from call_function import available_functions, call_function
 from config import MAX_ITERS
+import sys
+import time
 
 
 
@@ -43,11 +45,17 @@ def main():
     # Call the generate content function
     
     for _ in range(MAX_ITERS):
-        result = generate_content(client, messages, args.verbose)
-        
-        if result:
-            print(f'Success: {result}')
-            return
+        try:
+            result = generate_content(client, messages, args.verbose)
+            
+            if result:
+                print(f'Success: {result}')
+                return
+        except Exception as e:
+            # If the server is busy (503 Error), log it and loop again
+            print(f'Error calling model: {e}')
+            
+            time.sleep(2)
             
     print("Oh no, I ran out of turns!")    
     sys.exit(1)
